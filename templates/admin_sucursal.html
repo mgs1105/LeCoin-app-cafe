@@ -1,0 +1,259 @@
+{% extends 'admin_base.html' %}
+
+{% block header %}
+<h1>{% block title %} Admin {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+<!-- SWEET ALERT 2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% block content %}
+
+
+{% with mensajes = get_flashed_messages() %}
+{% if mensajes %}
+{% for m in mensajes %}
+
+{% if m == '¡La sucursal se ha registrado con exito!' or m == '¡Sucursal actualizada con exito!' %}
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'success',
+        text: '{{m}}',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% elif m == 'Esta sucursal ya existe' or m == 'El rut no es valido' %}
+
+<script>
+    Swal.fire ({
+        position: 'center',
+        icon: 'error',
+        text: "{{m}}",
+        
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+        
+        
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% elif m == 'Cerrar sesion' %}
+
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'question',
+        text: "¿Seguro que desea {{m}}?",
+
+        // boton Cerrar sesion
+        showConfirmButton: true,
+        confirmButtonColor: '#D53737',
+        confirmButtonAriaLabel: 'Cerrar sesion',
+        confirmButtonText: 'Cerrar sesion',
+
+        // boton volver
+        showCancelButton: true,
+        cancelButtonColor: '#24a0ed',
+        cancelButtonAriaLabel: 'Cancelar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) { 
+            window.location.href = '/';
+        } else {
+            window.location.href = '/admin_personal';
+        }
+    })
+
+</script>
+
+
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="main col" style="margin-left: 330px; margin-right: 20px;">
+    <h3>Administrar sucursal</h3>
+
+    <!-- AGREGAR SUCURSAL ACORDEON -->
+    <div class="accordion accordion-flush" id="temario">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="encabezado-1">
+                <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#elemento-1"
+                    aria-expanded="true"
+                    aria-controles="elemento-1"
+                >
+                    Agregar Sucursal
+                </button>
+            </h2>
+    
+            <div
+                id="elemento-1"
+                class="accordion-collapse collapse"
+                aria-labelledby="encabezado-1"
+                data-bs-parent="#temario">
+    
+                <div class="accordion-body">
+                    <div class="row contacto">
+                        <div class="container contenedor">
+                            <div class="col-12 col-xl-7">
+                                <form method="post" action="/registrar_sucursal" name="f1" class="border p-5 form">
+                                    <div class="form-group">
+                                        <label for="razon_social" style="color:black">Razon social</label>
+                                        <input name="razon_social" id="razon_social" class="form-control" type="text" style="color:black" onkeypress="return verificar_nombre(event)" required/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="giro" style="color:black">Giro</label>
+                                        <input name="giro" id="giro" class="form-control" type="text" style="color:black" onkeypress="return verificar_nombre(event)" required/>
+                                    </div>
+                    
+                                    <div class="form-group">
+                                        <label for="nombre" style="color:black">Nombre</label>
+                                        <input name="nombre" id="nombre" class="form-control" type="text" style="color: black;" required/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="rut" style="color:black">Rut</label>
+                                        <input name="rut" id="rut" class="form-control" maxlength="10" type="text" style="color: black;" placeholder="Sin puntos y con guíon" onkeypress="return verificar(event)" required/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="telefono" style="color:black">Telefono</label>
+                                        <input name="telefono" id="telefono" class="form-control" maxlength="8" style="color:black" placeholder="Solo introduzca los 8 digitos de su numero" onkeypress="return solo_numero(event)" required/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="direccion" style="color:black">Direccion</label>
+                                        <input name="direccion" id="direccion" class="form-control" style="color:black" required/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="correo" style="color:black">Correo electronico</label>
+                                        <input name="correo" id="correo" class="form-control" style="color:black" required/>
+                                    </div>
+                                    
+                                    <div class="form-group" style="color:black">
+                                        <b> <label for="estado">Estado</label> </b>
+                                        <select name="estado"  class="form-control" style="color:black">
+                                            <option value="1">Activado</option>
+                                            <option value="0">Desactivado</option>
+                                        </select>
+                                    </div>
+
+                                    <input type="submit" value="registrar" id="btn" class="btn btn-info">
+        
+                                </form>
+            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div> 
+
+    <br><br>
+
+    <br><br>
+    <!--  TABLA -->
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Razon social</th>
+                    <th scope="col">Giro</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Rut</th>
+                    <th scope="col">Telefono</th>
+                    <th scope="col">Direccion</th>
+                    <th scope="col">Correo electronico</th>
+                    <th scope="col">Estado
+                    <th scope="col">Modificar</th>    
+                </tr>
+            </thead>
+            <tbody id="cuerpo_tabla">
+                {% for sucursal in sucursales %}
+                <tr>
+                    <td>{{sucursal.razon_social}}</td>
+                    <td>{{sucursal.giro}}</td>
+                    <td>{{sucursal.nombre}}</td>
+                    <td>{{sucursal.rut}}</td>
+                    <td>{{sucursal.telefono}}</td>
+                    <td>{{sucursal.direccion}}</td>
+                    <td>{{sucursal.correo}}</td>
+
+                    {% if sucursal.estado == 1 %}
+                    <td>Activado</td>
+                    {% else %}
+                    <td>Desactivado</td>
+                    {% endif %}
+
+                    <td> <a href="/modificar_suc/{{ sucursal['id'] }}" class="btn btn-primary">Modificar</a> </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+              
+</div>
+
+
+<script>
+    function verificar(event) {
+        if (event.charCode >= 48 && event.charCode <= 57 || event.charCode == 107 || event.charCode == 45 ){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    function verificar_nombre(event) {
+    
+    if (event.charCode >= 107 && event.charCode <= 90 || event.charCode >= 97 && event.charCode <= 122 || event.charCode == 241 || event.charCode == 209
+        || event.charCode == 225 || event.charCode == 233 || event.charCode == 237 || event.charCode == 243 || event.charCode == 250) {
+            return true;
+    } else {
+        return false;
+    }
+    }
+    
+    function solo_numero(event) {
+        if (event.charCode >=48 && event.charCode <=57) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+</script>
+
+<script src="../static/css/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}
+
+</body>
+</html>

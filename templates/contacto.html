@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %} Contacto {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+
+
+{% block content %}
+
+    
+<main class="main col" style="margin-left: 330px; margin-right: 20px;">
+    <div class="row contacto">
+        <h1>Contacto</h1>
+
+        <div class="container contenedor">
+            <div class="col-12 col-xl-7" id="form-rec">
+                <h5>Reclamos, consutlas y/o sugerencias</h5>
+                
+                <form method="post" name="contacto" class="border p-5 form-horizontal" action="">
+                    <div class="form-group">
+                        <label for="nombre" style="color:black">Nombre</label>
+                        <input name="nombre" id="nombre" class="form-control" type="text" style="color:black" onkeypress="return verificar_nombre(event)" required/>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="correo" style="color:black">Correo electronico</label>
+                        <input name="correo" id="correo" class="form-control" style="color:black" required/>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="mensaje" style="color:black">Detalle</label>
+                        <textarea name="mensaje" id="mensaje" class="form-control" style="color:black" required></textarea>
+                    </div>
+                    <input type="submit" value="Enviar mensaje" id="btn" style="margin-top:20px">
+                </form>
+            
+            </div>
+        </div>
+    
+
+    </div>
+</main>
+
+
+
+<script>
+    function verificar_nombre(event) {
+
+if (event.charCode >= 107 && event.charCode <= 90 || event.charCode >= 97 && event.charCode <= 122 || event.charCode == 241 || event.charCode == 209
+    || event.charCode == 225 || event.charCode == 233 || event.charCode == 237 || event.charCode == 243 || event.charCode == 250) {
+        return true;
+} else {
+    return false;
+}
+}
+</script>
+
+{% endblock %}
+
+</body>
+</html>

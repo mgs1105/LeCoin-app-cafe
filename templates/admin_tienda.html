@@ -1,0 +1,307 @@
+{% extends 'admin_base.html' %}
+
+{% block header %}
+<h1>{% block title %} Admin {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+<!-- SWEET ALERT 2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% block content %}
+
+{% with mensajes = get_flashed_messages() %}
+{% if mensajes %}
+{% for m in mensajes %}
+
+{% if m == 'El SKU ya existe' or m == 'La categoria ya existe' %}
+
+<script>
+    Swal.fire ({
+        position: 'center',
+        icon: 'error',
+        text: "{{m}}",
+        
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+        
+        
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% elif m == '¡Producto actualizado con exito!' or m == '¡Categoria agregada con exito!' %}
+
+<script>
+Swal.fire({
+    position: 'center',
+    icon: 'success',
+    text: '{{m}}',
+
+    showConfirmButton: true,
+    confirmButtonColor: '#3E60E9',
+    confirmButtonAriaLabel: 'Ok',
+
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    allowEnterKey: false,
+    stopKeydownPropagation: false,
+})
+</script>
+
+{% else %}
+
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'success',
+        text: '{{m}}',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+
+<div class="main col" style="margin-left: 330px; margin-right: 20px;">
+
+    <div class="row">
+        <div class="col">
+            <div class="text-center">
+                <div class="card-body">
+                    <h1 class="bienvenido">Administrar tienda</h1>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if funcionario.rol == 1 %}
+    <!-- AGREGAR PRODUCTO Y CATEGORIA -->
+
+
+    
+
+    <div class="accordion accordion-flush" id="temario" style=" padding-right: 30px;">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="encabezado-1">
+                <button
+                    style="background-color: #7f544f; color: white;"
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#elemento-1"
+                    aria-expanded="true"
+                    aria-controles="elemento-1"
+                >
+                    Agregar Producto y Categoria
+                </button>
+            </h2>
+
+            <div class="row">
+                <div class="col-6">
+
+                    <div
+                        id="elemento-1"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="encabezado-1"
+                        data-bs-parent="#temario">
+
+                        <div class="accordion-body">
+                            <div id="form-rec">
+                                <form method="post" action="/agregar_producto" name="f1" class="border p-5 form" enctype="multipart/form-data">
+                                    
+                                    <strong> <label for=""> Agregar Producto</label> </strong>
+                                    
+                                    <div class="form-group">
+                                        <br>
+                                        <label for="sku" style="color:black">SKU</label>
+                                        <input name="sku" id="sku" class="form-control" type="text" style="color:black" required/>
+                                    </div>
+                        
+                                    <div class="form-group">
+                                        <label for="nombre" style="color:black">Nombre</label>
+                                        <input name="nombre" id="nombre" class="form-control" type="text" style="color:black" required/>
+                                    </div>
+                        
+                                    <div class="form-group">
+                                        <label for="precio" style="color:black">Precio</label>
+                                        <input name="precio" id="precio" class="form-control" style="color:black" onkeypress="return solo_numero(event)" required/>
+                                    </div>
+                        
+                                    <div class="form-group">
+                                        <label for="cant_tienda" style="color:black">cantidad en tienda</label>
+                                        <input name="cant_tienda" id="cant_tienda" class="form-control" style="color:black" onkeypress="return solo_numero(event)"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="stock_critico" style="color:black">Stock critico</label>
+                                        <input name="stock_critico" id="stock_critico" class="form-control" style="color:black" onkeypress="return solo_numero(event)"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="cant_bodega" style="color:black">cantidad en bodega</label>
+                                        <input name="cant_bodega" id="cant_bodega" class="form-control" style="color:black" onkeypress="return solo_numero(event)"/>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label for="descripcion" style="color:black">Descripcion</label>
+                                        <textarea name="descripcion" id="descripcion" class="form-control" style="color:black"></textarea>
+                                    </div>
+                        
+                                    <div class="form-group">
+                                        <label for="imagen" style="color:black">Imagen</label>
+                                        <input type="file" name="imagen" id="imagen" class="form-control" style="color:black"></input>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="categoria" style="color:black">Categoria</label>
+                                        <select id="categoria" name="categoria" class="form-control">
+                                            {% for cat in categorias %}
+                                            <option value="{{cat['id']}}">{{cat['nombre']}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <br>
+                                    <input type="submit" value="Agregar" id="btn" class="btn" style="background-color: #7f544f; color: white;">
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+             
+
+                <div class="col-6">
+                    <div
+                        id="elemento-1"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="encabezado-1"
+                        data-bs-parent="#temario">
+
+                        <div class="accordion-body">
+        
+                            <div  id="form-rec">
+                                <form method="post" action="/agregar_categoria" name="f1" class="border p-5 form">
+                        
+                                    <div class="form-group">
+                                        <strong> <label for="nombre" style="color:black">Agregue nueva categoria</label> </strong>
+                                        <input name="nombre" id="nombre" class="form-control" type="text" style="color:black" required/>
+                                    </div>
+                                    <br>
+                                    <input type="submit" value="Agregar" id="btn" class="btn" style="background-color: #7f544f; color: white;">
+                                </form>
+
+                                <br>
+
+                                <form method="post" action="/estado_categoria" name="f1" class="border p-5 form">
+
+                                    <div class="form-group">
+                                       <strong> <label for="categoria" style="color:black">Activar o Desactivar Categoria</label> </strong>
+                                        <select id="categoria" name="categoria" class="form-control">
+                                            {% for cat in categorias %}
+                                            <option value="{{cat['id']}}">{{cat['nombre']}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <br>
+                                    <input type="submit" value="Cambiar estado" id="btn" class="btn" style="background-color: #7f544f; color: white;">
+                                </form>
+
+                            </div>
+                        </div>
+ 
+                    </div>
+            
+
+                    
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    {% endif %}
+    <!--------------------------->
+
+    {% for cat in categorias %}
+
+    <div class="row">
+        {% if cat.estado == 1 %}
+        <h2 class="text-center titulo_producto">{{cat['nombre']}} - Activado</h2>
+        {% else %}
+        <h2 class="text-center titulo_producto">{{cat['nombre']}} - Desactivado</h2>
+        {% endif %}
+
+        {% for prod in data %}
+        {% if prod.categoria == cat.id %}
+        <div class="col-lg-12 col-xl-4">
+            
+            <div class="card">
+                <!-- <img class="card-img-top" src="img/bg.jpg" alt=""> -->
+                <div class="card-body">
+                    <p> <img style="width: 100%; height: 100%;" src="../static/alimentos/{{prod.imagen}}" alt="imagen"> </p>
+                    <h4 class="card-title">SKU: {{prod.sku}}</h4>
+                    <h4 class="card-title">Nombre: {{ prod.nombre }}</h4>
+                    <h4 class="card-title">Valor: $ {{ prod.precio }}</h4>
+                    <h5 class="card-title">Cantidad en tienda: {{ prod.cant_tienda }}</h5>
+                    <h5 class="card-title">Cantidad en bodega: {{ prod.cantidad_bodega }}</h5>
+                    <p class="card-text">Descripcion: {{ prod.descripcion }}</p>
+                    <br>
+                    {% if prod.estado == 1 %}
+                    <h5 class="card-text">Estado: Activado</h5>
+                    {% else %}
+                    <h5 class="card-text">Estado: Desactivado</h5>
+                    {% endif %}
+
+                    <a href="/modificar_prod/{{ prod['id'] }}" class="btn btn-outline-dark">Modificar</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+    
+
+</div>
+
+
+<script>
+    function solo_numero(event) {
+    if (event.charCode >=48 && event.charCode <=57) {
+        return true;
+    } else {
+        return false;
+    }
+}
+</script>
+
+<script src="../static/css/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+{% extends 'admin_base_modificar.html' %}
+
+{% block header %}
+<h1>{% block title %} Modificar Producto {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+<!-- SWEET ALERT 2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% block content %}
+
+
+<main class="main col" style="margin-left: 330px; margin-right: 20px;">
+    <div class="row">
+        
+        <div class="col">
+            <div class="text-center">
+                <div class="card-body">
+                    <h1 class="bienvenido">Modificar datos del producto</h1>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row contacto">
+            <div class="container contenedor">
+                <div class="col-12 col-xl-7" id="form-rec">
+
+                    <form action="/actualizaP/{{data.id}}" method="post" name="f1" class="border p-5 form" enctype="multipart/form-data">
+                        <!-- SKU -->
+                        <div class="form-group">
+                            <b> <label for="sku" style="color:black"> SKU </label> </b>
+                            {% if funcionario.rol == 1 %}
+                            <input name="sku" id="sku" class="form-control" type="text" value="{{data.sku}}" style="color:black" required/>
+                            {% else %}
+                            <input name="sku" id="sku" class="form-control" type="text" value="{{data.sku}}" style="color:black" readonly/>
+                            {% endif %}
+                        </div>
+                        <!-- NOMBRE -->
+                        <div class="form-group">
+                            <b> <label for="nombre" style="color:black"> Nombre </label> </b>
+                            {% if funcionario.rol == 1 %}
+                            <input name="nombre" id="nombre" class="form-control" style="color: black;" value="{{data.nombre}}" required >
+                            {% else %}
+                            <input name="nombre" id="nombre" class="form-control" style="color: black;" value="{{data.nombre}}" readonly >
+                           {% endif %}
+                        </div>
+                        <!-- PRECIO -->
+                        <div class="form-group">
+                            <b> <label for="precio" style="color:black"> Precio </label> </b>
+                            {% if funcionario.rol == 1 %}
+                            <input name="precio" id="precio" class="form-control" style="color: black;" onkeypress="return solo_numero(event)" value="{{data.precio}}" required>
+                            {% else %}
+                            <input name="precio" id="precio" class="form-control" style="color: black;" onkeypress="return solo_numero(event)" value="{{data.precio}}" readonly>
+                            {% endif %}
+      
+                        </div>
+                        <!-- CANTIDAD TIENDA -->
+                        <div class="form-group">
+                            <label for="cant_tienda" style="color:black">Cantidad en tienda</label>
+                            <input name="cant_tienda" id="cant_tienda" class="form-control" style="color:black" onkeypress="return solo_numero(event)" value="{{data.cant_tienda}}" required/>
+                        </div>
+                        <!-- STOCK CRITICO -->
+                        <div class="form-group">
+                            <label for="stock_critico" style="color:black">Stock critico</label>
+                            {% if funcionario.rol == 1 %}
+                            <input name="stock_critico" id="stock_critico" value="{{data.stock_critico}}" class="form-control" style="color:black" onkeypress="return solo_numero(event)" required/>
+                            {% else %}
+                            <input name="stock_critico" id="stock_critico" value="{{data.stock_critico}}" class="form-control" style="color:black" onkeypress="return solo_numero(event)" readonly/>
+                            {% endif %}
+                        </div>
+
+    
+                        <!-- CANTIDAD BODEGA -->
+     
+                        <div class="form-group">
+                            <label for="cant_bodega" style="color:black">Cantidad en bodega</label>
+                            {% if funcionario.rol == 1 %}
+                            <input name="cant_bodega" id="cant_bodega" class="form-control" style="color:black" onkeypress="return solo_numero(event)" value="{{data.cantidad_bodega}}" required/>
+                            {% else %}
+                            <input name="cant_bodega" id="cant_bodega" class="form-control" style="color:black" onkeypress="return solo_numero(event)" value="{{data.cantidad_bodega}}" readonly/>
+                            {% endif %}
+                        </div>
+
+                        <!-- IMAGEN -->
+                        <div class="form-group">
+                            <label for="imagen" style="color:black">Imagen</label>
+                            {% if data.imagen != None %}
+                            <p> <img style="width: 100%; height: 100%;" src="../static/alimentos/{{data.imagen}}" alt="imagen"> </p>
+                            {% endif %}
+                            {% if funcionario.rol == 1 %}
+                            <input type="file" name="imagen" id="imagen" class="form-control" style="color:black"></input>
+                            {% endif %}
+                        </div>
+
+                        <!-- DESCRIPCION -->
+                        <div class="form-group">
+                            <label for="descripcion" style="color:black">Descripcion</label>
+                            {% if funcionario.rol == 2 %}
+                            <textarea name="descripcion" id="descripcion" class="form-control" style="color:black" readonly>{{data.descripcion}}</textarea>
+                            {% else %}
+                            <textarea name="descripcion" id="descripcion" class="form-control" style="color:black" required>{{data.descripcion}}</textarea>
+                            {% endif %}
+                        </div>
+        
+                        <!-- CATEGORIA -->
+                        <div class="form-group">
+                            <label for="categoria" style="color:black">Categoria</label>
+                            <select id="categoria" name="categoria" class="form-control" >
+                                {% if funcionario.rol == 2 %}
+                                <option value="{{data.categoria}}">{{data.nom_cat}}</option>
+                                {% else %}
+                                <option value="{{data.categoria}}">{{data.nom_cat}}</option>
+                                {% for cat in categorias %}
+                                <option value="{{cat.id}}">{{cat.nombre}}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        
+                        <!-- ESTADO (ACTIVADO/DESACTIVADO) -->
+                        <div class="form-group" style="color:black">
+                            <b> <label for="estado">Estado</label> </b>
+                            <select name="estado"  class="form-control" style="color:black">
+                                    {% if data.estado == 1 %}
+                                    <option value="1">Activado</option>
+                                    <option value="0">Desactivado</option>
+                                    {% else %}
+                                    <option value="0">Desactivado</option>
+                                    <option value="1">Activado</option>
+                                    {% endif %}
+                                </select>
+                        </div>
+                        
+                        <br>
+                        <input type="submit" value="Editar"  id="btn" class="btn" style="background-color: #7f544f; color: white; padding: 5px 30px;"/>
+                    </form>
+                
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    
+{% endblock %}
+
+</body>
+</html>

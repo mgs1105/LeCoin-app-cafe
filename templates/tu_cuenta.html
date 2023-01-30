@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+{% block header %}
+<h1>{% block title %} Registrarse {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+
+{% block content %}
+
+{% with mensajes = get_flashed_messages() %}
+{% if mensajes %}
+{% for m in mensajes %}
+
+{% if m == '¡Te has registrado con exito!' %}
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'success',
+        text: '{{m}}',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% elif m == '%s' %}
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'question',
+        text: "¿Seguro que desea cerrar sesion?",
+
+        // boton Cerrar sesion
+        showConfirmButton: true,
+        confirmButtonColor: '#D53737',
+        confirmButtonAriaLabel: 'Cerrar sesion',
+        confirmButtonText: 'Cerrar sesion',
+
+        // boton volver
+        showCancelButton: true,
+        cancelButtonColor: '#24a0ed',
+        cancelButtonAriaLabel: 'Cancelar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) { 
+            window.location.href = '/destruir_sesion_cliente';
+        } else {
+            window.location.href = '/tu_cuenta';
+        }
+    })
+
+</script>
+
+
+{% elif m == '¡Tus datos han sido actualizados con exito!' %}
+
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'success',
+        text: '{{m}}',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% else %}
+
+<script>
+    Swal.fire ({
+        position: 'center',
+        icon: 'error',
+        text: "{{m}}",
+        
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+        
+        
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<main class="main col" style="margin-left: 300px; margin-right: 20px;">
+    <div class="row">
+
+        {% if cliente == None and funcionario == None %}
+        
+        <div class="row">
+            <div class="col">
+                <div class="text-center">
+                    <div class="card-body">
+                        <h1 class="bienvenido">Registrate o inicia sesion con tus datos</h1>
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row contacto" style="margin-top: 30px;">
+
+            <div class="container contenedor">
+            <div class="col-12 col-xl-7" id="form-rec">
+                
+                <form method="post" action="/iniciar_sesion" id="f1" name="f1" class="border p-5 form-horizontal">
+                    <b> <p style="text-align: center; font-size: 18px;">Inicia sesion </p></b>
+                    
+                    <div class="form-group">
+                        <label for="correo" style="color:black">Correo</label>
+                        <input name="correo" id="correo" class="form-control" type="text" style="color:black" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" style="color:black">Password</label>
+                        <input type="password" name="password" id="password" class="form-control" type="text" style="color:black" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo" style="color:black">Tipo de usuario</label>
+                        <select id="tipo" name="tipo" class="form-control">
+                            <option value="1">Cliente</option>
+                            <option value="2">Funcionario</option>
+                        </select>
+                    </div>
+                    <br>
+                    <input type="submit" value="Iniciar sesion" id="btn-inc" class="btn" style="background-color: #7f544f; color: white;">
+                </form>
+                
+                <br><br>
+            </div>
+            </div>
+    
+        </div>
+
+ 
+        <div class="row contacto">
+
+            <div class="container contenedor">
+            <div class="col-12 col-xl-7" id="form-rec">
+                
+                <form method="post" action="/registrarse" id="f1" name="f1" class="border p-5 form-horizontal">
+                    <b> <p style="text-align: center; font-size: 18px;">Completa el formulario para tu registro como nuevo usuario</p></b>
+                    <div class="form-group">
+                        <label for="nombre" style="color:black">Nombre</label>
+                        <input name="nombre" id="nombre" class="form-control" type="text" style="color:black" onkeypress="return verificar_nombre(event)" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido" style="color:black">Apellido</label>
+                        <input name="apellido" id="apellido" class="form-control" type="text" style="color:black" onkeypress="return verificar_nombre(event)" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rut" style="color:black">Rut</label>
+                        <input name="rut" id="rut" class="form-control" maxlength="10" type="text" style="color: black;" placeholder="Sin puntos y con guíon" onkeypress='return verificar(event)' required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono" style="color:black">Telefono</label>
+                        <input name="telefono" id="telefono" class="form-control" maxlength="8" style="color:black" placeholder="Solo introduzca los 8 digitos de su numero" onkeypress="return solo_numero(event)" required/>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="direccion" style="color:black">Direccion</label>
+                        <input name="direccion" id="direccion" class="form-control" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="correo" style="color:black">Correo electronico</label>
+                        <input name="correo" id="correo" class="form-control" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" style="color:black">Password</label>
+                        <input name="password" id="password" type="password" class="form-control" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="r_password" style="color:black">Repetir Password</label>
+                        <input name="r_password" id="r_password" type="password" class="form-control" style="color:black" required/>
+                    </div>
+                    
+                    <br>
+                    <input type="submit" value="Registrar" id="btn" class="btn" style="background-color: #7f544f; color: white;">
+                </form>
+
+            </div>
+            </div>
+
+        </div>
+        
+
+
+        {% elif funcionario != None %}
+
+        <div class="text-center">
+            <div class="card-body">
+                <h1>Tus Datos</h1>
+            </div>
+        </div>
+
+        <div class="row contacto">
+
+            <div class="container contenedor">
+            <div class="col-12 col-xl-7" id="form-rec">
+                
+                <form method="post" action="/actualizaF/{{funcionario.id}}" id="f2" name="f2" class="border p-5 form-horizontal">
+                    <div class="form-group">
+                        <label for="nombre" style="color:black">Nombre</label>
+                        <input name="nombre" id="nombre" class="form-control" type="text" style="color:black" value="{{funcionario.nombre}}" onkeypress="return verificar_nombre(event)" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido" style="color:black">Apellido</label>
+                        <input name="apellido" id="apellido" class="form-control" type="text" style="color:black" value="{{funcionario.apellido}}" onkeypress="return verificar_nombre(event)" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rut" style="color:black">Rut</label>
+                        <input name="rut" id="rut" class="form-control" maxlength="10" type="text" style="color:black;" value="{{funcionario.rut}}" placeholder="Sin puntos y con guíon" onkeypress='return verificar(event)' required/>
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="correo" style="color:black">Correo electronico</label>
+                        <input name="correo" id="correo" class="form-control" value="{{funcionario.correo}}" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" style="color:black">Password</label>
+                        <input name="password" id="password" type="text" class="form-control" value="{{funcionario.password}}" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="repetir_password" style="color:black">Repetir Password</label>
+                        <input name="repetir_password" id="repetir_password" type="text" class="form-control" value="{{funcionario.password}}" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rol" style="color:black">Rol</label>
+                        {% if funcionario.rol == 2 %}
+                            <label for="rol" style="color:black">Cajero(a)</label>
+                        {% else %}
+                            <select id="rol" name="rol" class="form-control">
+                                <option value="1">Administrador</option>
+                                <option value="2">Cajero(a)</option>
+                            </select>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estado" style="color:black">Estado</label>
+                        <select id="estado" name="estado" class="form-control">
+                            <option value="1">Activado</option>
+                            <option value="0">Desactivado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_sucursal" style="color:black">Sucursal</label>
+                        {% if funcionario.rol == 2 %}
+                        <label for="id_sucursal" style="color:black">{{funcionario.id_sucursal}}</label>
+                        {% else %}
+                            <select id="sucursal" name="sucursal" class="form-control">
+                            <option value="1">Avenida Pedro Aguirre Cerda</option>
+                            <option value="2">José Ignacio Zenteno 21</option>
+                            <option value="3">Avenida Angamos 236</option>
+                        </select>
+                        {% endif %}
+                    </div>
+
+                    <br>
+                    <input type="submit" value="Actualizar" id="btn" class="btn" style="background-color: #7f544f; color: white;">
+            </form>
+
+            </div>
+            </div>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="text-center">
+            <div class="card-body">
+                <h1 class="bienvenido">Tus Datos</h1>
+            </div>
+        </div>
+
+        <div class="row contacto">
+
+            <div class="container contenedor">
+            <div class="col-12 col-xl-7" id="form-rec">
+                
+                <form method="post" action="/actualizar_cliente/{{cliente.id}}" id="f2" name="f2" class="border p-5 form-horizontal">
+                    <div class="form-group">
+                        <label for="nombre" style="color:black">Nombre</label>
+                        <input name="nombre" id="nombre" class="form-control" type="text" style="color:black" value="{{cliente.nombre}}" onkeypress="return verificar_nombre(event)" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido" style="color:black">Apellido</label>
+                        <input name="apellido" id="apellido" class="form-control" type="text" style="color:black" value="{{cliente.apellido}}" onkeypress="return verificar_nombre(event)" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rut" style="color:black">Rut</label>
+                        <input name="rut" id="rut" class="form-control" maxlength="10" type="text" style="color:black;" value="{{cliente.rut}}" placeholder="Sin puntos y con guíon" onkeypress='return verificar(event)' required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono" style="color:black">Telefono</label>
+                        <input name="telefono" id="telefono" class="form-control" maxlength="8" style="color:black" value="{{cliente.telefono}}" placeholder="Solo introduzca los 8 digitos de su numero" onkeypress="return solo_numero(event)" required/>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="direccion" style="color:black">Direccion</label>
+                        <input name="direccion" id="direccion" class="form-control" value="{{cliente.direccion}}" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="correo" style="color:black">Correo electronico</label>
+                        <input name="correo" id="correo" class="form-control" value="{{cliente.correo}}" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" style="color:black">Password</label>
+                        <input name="password" id="password" type="text" class="form-control" value="{{cliente.password}}" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="r_password" style="color:black">Repetir Password</label>
+                        <input name="r_password" id="r_password" type="text" class="form-control" value="{{cliente.password}}" style="color:black" required/>
+                    </div>
+                    
+                    <br>
+                    <input type="submit" value="Actualizar" id="btn" class="btn" style="background-color: #7f544f; color: white;">
+            </form>
+            </div>
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+</main>
+
+<script>
+function verificar(event) {
+    if (event.charCode >= 48 && event.charCode <= 57 || event.charCode == 107 || event.charCode == 45 ){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function verificar_nombre(event) {
+
+if (event.charCode >= 107 && event.charCode <= 90 || event.charCode >= 97 && event.charCode <= 122 || event.charCode == 241 || event.charCode == 209
+    || event.charCode == 225 || event.charCode == 233 || event.charCode == 237 || event.charCode == 243 || event.charCode == 250) {
+        return true;
+} else {
+    return false;
+}
+}
+
+function solo_numero(event) {
+    if (event.charCode >=48 && event.charCode <=57) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+</script>
+
+{% endblock %}
+
+</body>
+</html>

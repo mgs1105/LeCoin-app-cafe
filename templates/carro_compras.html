@@ -1,0 +1,503 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %} Carro de compras {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+<!-- SWEET ALERT 2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% block content %}
+
+{% with mensajes = get_flashed_messages() %}
+{% if mensajes %}
+{% for m in mensajes %}
+
+{% if m == 'El rut no es valido' or m == 'El carro de compras esta vacio' or m  == 'Los password no coinciden' %}
+
+<script>
+    Swal.fire ({
+        position: 'center',
+        icon: 'error',
+        text: "{{m}}",
+        
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+        
+        
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% elif m == 'Datos correctos, se redirecciona al pago' %}
+
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'success',
+        text: '{{m}}',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% else %}
+
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'question',
+        title: 'Seleccione la cantidad que desea llevar',
+        html:
+        '<input id="cantidad" class="swal2-input" type="number" min=1 max={{m[1]}} value=1>',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Modificar',
+        confirmButtonText: 'Modificar',
+
+        showCancelButton: true,
+        cancelButtonColor: '#E83845',
+        cancelButtonAriaLabel: 'Cancelar',
+        cancelButtonText: 'Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            
+            const id = '{{m[0]}}'
+            const cantidad = document.getElementById('cantidad').value
+
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                url: '/modificar_prod',
+                data: {
+                    id : id,
+                    cantidad: cantidad,
+                },
+            })
+            window.location.href = '/carro_compras'
+        }
+    }) 
+</script>
+
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<main class="main col" style="margin-left: 330px; margin-right: 20px;">
+    
+    <div class="row">
+        <div class="col">
+            <div class="text-center">
+                <div class="card-body">
+                    <h1 class="bienvenido">Carro de compras</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Precio por unidad</th>
+                    <th scope="col">Descripcion</th>
+                    <th scope="col">cantidad</th>
+                    <th scope="col">Modificar cantidad</th>
+                    <th scope="col">Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prod in data %}
+                <tr>
+                    <td> {{prod['nombre']}} </td>
+                    <td> {{prod['precio']}} </td>
+                    <td> {{prod['descripcion']}} </td>
+                    <td> {{prod['cantidad']}} </td>
+                    <td> <a href="/modificar_carro/{{ prod['id'] }}" class="btn btn-outline-dark">Modificar</a> </td>
+                    <td> <a href="/eliminar_de_carro/{{ prod['id'] }}" class="btn" style="background-color: #BF4C2A; color: white;">Eliminar</a> </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if data2 != 0 %}
+        <strong>Precio por Pedido:</strong> <strong id="precio_pedido" title=" {{data2}}">      {{data2}}  </strong>
+        
+        <p> <strong></strong> </p>
+        <p><strong>Valor de envio:                              </strong> <strong id="valor_envio"></strong></p>
+        <p> <strong></strong> </p>
+        <p><strong>Precio total:                                </strong> <strong id="precio_total"></strong></p>
+        {% endif %}
+    </div>    
+
+
+    <div class="row contacto">
+        <div class="col-7">
+            <div class="container contenedor">
+                <div class="col-12 col-xl-7">
+
+                    <form action="/pagar_carro_compras" name="f2" method="post">
+                        
+                        <input name="valor_envio2" id="valor_envio2" type="hidden" class="form-control" value="asd" style="color:black"/>
+
+                        <!-- NOMBRE -->
+                        <div class="form-group">
+                            <label for="nombre" style="color:black">Nombre</label>
+
+                            {% if cliente == None %}
+                            <input name="nombre" id="nombre" class="form-control" type="text" style="color:black" onkeypress="return verificar_nombre(event)" required/>
+                            {% else %}
+                            <input name="nombre" id="nombre" class="form-control" type="text" style="color:black" value="{{cliente.nombre}}" onkeypress="return verificar_nombre(event)" required/>
+                            {% endif %}
+                        </div>
+
+                        <!-- APELLIDO -->
+                        <div class="form-group">
+                            <label for="apellido" style="color:black">Apellido</label>
+                            {% if cliente == None %}
+                            <input name="apellido" id="apellido" class="form-control" type="text" style="color:black" onkeypress="return verificar_nombre(event)" required/>
+                            {% else %}
+                            <input name="apellido" id="apellido" class="form-control" type="text" style="color:black" value="{{cliente.apellido}}" onkeypress="return verificar_nombre(event)" required/>
+                            {% endif %}
+                        </div>
+
+                        <!-- RUT -->
+                        <div class="form-group">
+                            <label for="rut" style="color:black">Rut</label>
+                            {% if cliente == None %}
+                            <input name="rut" id="rut" class="form-control" maxlength="10" type="text" style="color: black;" placeholder="Sin puntos y con guíon" onkeypress='return verificar(event)' required/>
+                            {% else %}
+                            <input name="rut" id="rut" class="form-control" maxlength="10" type="text" style="color: black" value="{{cliente.rut}}"  placeholder="Sin puntos y con guíon" onkeypress='return verificar(event)' required/>
+                            {% endif %}
+                        </div>
+
+                        <!-- TELEFONO -->
+                        <div class="form-group">
+                            <label for="telefono" style="color:black">Telefono</label>
+                            {% if cliente == None %}
+                            <input name="telefono" id="telefono" class="form-control" maxlength="8" style="color:black" placeholder="Solo introduzca los 8 digitos de su numero" onkeypress="return solo_numero(event)" required/>
+                            {% else %}
+                            <input name="telefono" id="telefono" class="form-control" maxlength="8" style="color:black"  value="{{cliente.telefono}}" placeholder="Solo introduzca los 8 digitos de su numero" onkeypress="return solo_numero(event)" required/>
+                            {% endif %}
+                        </div>
+
+                        <!-- DIRECCION -->
+                        <div class="form-group">
+                            <label for="direccion" style="color:black">Direccion</label>
+                            <input type="text" name="direccion" id="direccion" class="form-control" style="color:black" disabled/>
+                        </div>
+
+                        <!-- CORREO -->
+                        <div class="form-group">
+                            <label for="correo" style="color:black">Correo electronico</label>
+                            {% if cliente == None %}
+                            <input name="correo" id="correo" class="form-control" style="color:black" required/>
+                            {% else %}
+                            <input name="correo" id="correo" class="form-control" style="color:black" value="{{cliente.correo}}" required/>
+                            {% endif %}
+                        </div>
+                    
+                        {% if cliente == None %}
+                        <div class="form-group">
+                            <label for="password" style="color:black">Password</label>
+                            <input name="password" id="password" type="password" class="form-control" style="color:black" required/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="r_password" style="color:black">Repetir Password</label>
+                            <input name="r_password" id="r_password" type="password" class="form-control" style="color:black" required/>
+                        </div>
+                        {% endif %}
+
+                        <!-- OBSERVACIONES -->
+                        <div class="form-group">
+                            <label for="observaciones" style="color:black">Observaciones</label>
+                            <textarea name="observaciones" id="observaciones" class="form-control" style="color:black"></textarea>
+                        </div>
+
+                        <!-- SUCURSAL -->
+                        <div class="form-group" style="color:black">
+                            <b> <label for="id_sucursal">Sucursal</label> </b>
+                            <select name="id_sucursal" id="id_sucursal"  class="form-control" style="color:black" onchange="sucursal_select()">
+                                <option value="0" disabled selected>Seleccione...</option>
+                                <option value="1">Avenida Pedro Aguirre Cerda 9440</option>
+                                <option value="2">José Ignacio Zenteno 21</option>
+                                <option value="3">Avenida Angamos 236</option>
+                            </select>
+                        </div>
+
+                        <br>
+                        <input type="submit" value="Pagar" id="btn-pagar" onclick="pagar()" class="btn" style="background-color: #7f544f; color: white; padding: 5px 30px;">
+                    </form>
+
+                    <br><br>
+                    <p style="color: red;">**ADVERTENCIA**</p> <p> el pedido una vez realizado no se podrá cancelar</p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-5">
+            <style> 
+            #map {
+              height: 100%;
+              width: 100%;
+              }
+           
+              html, body {
+              height: 100%;
+              margin: 0;
+              padding: 0;
+              }
+            </style> 
+            <div id ="map"> </div>
+        </div>
+
+    </div>
+    
+
+
+</main>
+
+<script>
+    function sucursal_select() {
+
+        s = document.getElementById("id_sucursal").value;
+
+        if( s == 1) {
+            lat = -23.579626;
+            lon = -70.390508;
+        }
+        if (s == 2) {
+            lat = -23.637914;
+            lon = -70.396241;
+        } 
+        if (s == 3) {
+            lat = -23.675983;
+            lon = -70.408125;
+        }
+
+        var direccion = document.getElementById("direccion");
+
+        var radio = $('input[name="despacho"]:checked').val();
+
+        if (radio == 0) {
+            direccion.disavled = true;
+        } else {
+
+            if (s != 0) {
+                direccion.disabled = false;
+            } else {
+                direccion.disavled = true;
+            }
+        } 
+
+
+        return [lat,lon];
+    }
+
+</script>
+
+<!---------------- MAPA -------------------->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMKM8EL_YX9zrh0JgSzY7O-A6bnr--r_M&libraries=places">
+</script>
+
+<script>
+    google.maps.event.addDomListener(window, 'load', function(){
+        const options = {
+            center: {
+                lat: -23.631215,
+                lng: -70.392461
+            },
+            zoom: 12
+        }
+
+        var map = document.getElementById('map');
+        const mapa = new google.maps.Map(map, options);
+
+        // Pedro Aguirre Cerda
+        var marker = new google.maps.Marker({
+            position: {lat: -23.579626, lng: -70.390508},
+            map: mapa,
+            title: 'Pedro Aguirre Cerda'
+        });
+        // Espacio urbano 
+        var marker = new google.maps.Marker({
+            position: {lat: -23.637914, lng: -70.396241},
+            map: mapa,
+            title: 'Espacio Urbano'
+        });
+        // Avenida angamos
+        var marker = new google.maps.Marker({
+            position: {lat: -23.675983, lng: -70.408125},
+            map: mapa,
+            title: 'Avenida Angamos'
+        });
+
+        var autocompletado = document.getElementById('direccion');
+        const search = new google.maps.places.Autocomplete( autocompletado,
+            {
+                types: ['address'],
+                componentRestrictions: {'country': ['CL']},
+                fields: ['place_id', 'geometry', 'name']
+            }
+        );
+        search.bindTo('bounds', mapa);
+        search.addListener('place_changed', cambiar_lugar);
+        
+        function cambiar_lugar() {
+
+            marker.setVisible(false)
+
+            var lugar = search.getPlace()
+
+            if (!lugar.geometry.viewport) {
+                document.getElementById('direccion').placeholder = 'Inserta lugar';
+            }
+
+            if (lugar.geometry.viewport) {
+                mapa.fitBounds(lugar.geometry.viewport);
+            } else {
+                mapa.SetCenter(lugar.geometry.location);
+                mapa.setZoom(16);
+            }
+            
+            marker.setPosition(lugar.geometry.location);
+            
+
+            var ubicacion = lugar.geometry.location.toString()
+            var lat = ubicacion.substring(1,12)
+            var lon = ubicacion.substring(14,25)
+            var lt = parseFloat(lat); //LATITUD
+            var ln = parseFloat(lon); //LONGITUD
+            
+            console.log("LAT", lt, "LN", ln)
+
+            marker.setVisible(true);
+
+            // ------------------------ DISTANCIA ------------------------------------
+            // -----------------------------------------------------------------------
+
+            var origen = new google.maps.LatLng(sucursal_select()[0],sucursal_select()[1]);
+            var destino = new google.maps.LatLng(lt, ln);
+
+            var service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix(
+            {
+                origins: [origen],
+                destinations: [destino],
+                travelMode: 'DRIVING',
+            }, callback);
+
+            function callback(response, status) {
+                if (status == 'OK') {
+                    var resp_origen = response.originAddresses; //OBJETO CON DIRECCION DE LA SUCURSAL
+                    var resp_destino = response.destinationAddresses; //OBJETO CON DIRECCION DEL CLIENTE
+
+                
+                    for (var i = 0; i < resp_origen.length; i++) {
+                        var results = response.rows[i].elements;
+                        for (var j = 0; j < results.length; j++) {
+                            var element = results[j];
+                            var distancia = element.distance.text; // VALOR EN KILOMETROS DESDE LA SUCURSAL AL CLIENTE
+                        }
+                    }
+                }
+                
+                precio(distancia)
+           
+            }
+
+
+        }
+
+});
+
+</script>
+
+<script>
+    function precio(precio_distancia) {
+        dist = precio_distancia.substring(0,4)
+        
+        precio_final = 0;
+
+        if (dist <= 4.0) {
+            console.log("distancia", dist)
+            precio_final = 2000
+        }
+
+        if (dist > 4.0 && dist <= 8.0 ) {
+            console.log("distancia", dist)
+            precio_final = 3000
+        }
+
+        if (dist > 8.0 ) {
+            console.log("distancia", dist)
+            precio_final = 4000
+        }
+
+        txt  = document.getElementById("valor_envio");
+        txt.innerHTML = precio_final;
+        document.getElementById("valor_envio2").value = precio_final;
+
+        txt2  = document.getElementById("precio_total");
+        
+        precio_pedido = document.getElementById("precio_pedido").title;
+        
+        precio_total = parseInt( precio_pedido) + parseInt(precio_final) 
+        txt2.innerHTML = precio_total
+        txt2.title = precio_total
+    }
+
+    //  VALIDAR ALGUNOS INPUT DEL FORMULARIO 
+    function verificar(event) {
+        if (event.charCode >= 48 && event.charCode <= 57 || event.charCode == 107 || event.charCode == 45 ){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    function verificar_nombre(event) {
+    
+    if (event.charCode >= 107 && event.charCode <= 90 || event.charCode >= 97 && event.charCode <= 122 || event.charCode == 241 || event.charCode == 209
+        || event.charCode == 225 || event.charCode == 233 || event.charCode == 237 || event.charCode == 243 || event.charCode == 250) {
+            return true;
+    } else {
+        return false;
+    }
+    }
+    
+    function solo_numero(event) {
+        if (event.charCode >=48 && event.charCode <=57) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+</script>
+
+
+{% endblock %}
+
+</body>
+</html>

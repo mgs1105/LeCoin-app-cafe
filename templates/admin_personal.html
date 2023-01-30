@@ -1,0 +1,405 @@
+{% extends 'admin_base.html' %}
+
+{% block header %}
+<h1>{% block title %} Admin {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+<!-- SWEET ALERT 2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% block content %}
+
+
+{% with mensajes = get_flashed_messages() %}
+{% if mensajes %}
+{% for m in mensajes %}
+
+{% if m == '¡El funcionario se ha registrado con exito!' or m == '¡Funcionario actualizado con exito!' %}
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'success',
+        text: '{{m}}',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% elif m == 'Este funcionario ya existe' or m == 'El rut no es valido' or m == 'Los password no coinciden' %}
+
+<script>
+    Swal.fire ({
+        position: 'center',
+        icon: 'error',
+        text: "{{m}}",
+        
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+        
+        
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% elif m == 'Cerrar sesion' %}
+
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'question',
+        text: "¿Seguro que desea {{m}}?",
+
+        // boton Cerrar sesion
+        showConfirmButton: true,
+        confirmButtonColor: '#D53737',
+        confirmButtonAriaLabel: 'Cerrar sesion',
+        confirmButtonText: 'Cerrar sesion',
+
+        // boton volver
+        showCancelButton: true,
+        cancelButtonColor: '#24a0ed',
+        cancelButtonAriaLabel: 'Cancelar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) { 
+            window.location.href = '/';
+        } else {
+            window.location.href = '/admin_personal';
+        }
+    })
+
+</script>
+
+
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="main col" style="margin-left: 330px; margin-right: 20px;">
+    
+    <div class="row">
+        <div class="col">
+            <div class="text-center">
+                <div class="card-body">
+                    <h1 class="bienvenido">Administrar personal</h1>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AGREGAR PERSONAL ACORDEON -->
+    <div class="accordion accordion-flush" id="temario" style=" padding-right: 30px;">
+        <div class="accordion-item" >
+            <h2 class="accordion-header" id="encabezado-1">
+                <button
+                    style="background-color: #7f544f; color: white;"
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#elemento-1"
+                    aria-expanded="true"
+                    aria-controles="elemento-1"
+                >
+                    Agregar personal
+                </button>
+            </h2>
+    
+            <div
+                id="elemento-1"
+                class="accordion-collapse collapse"
+                aria-labelledby="encabezado-1"
+                data-bs-parent="#temario">
+    
+                <div class="accordion-body">
+                    <div class="row contacto">
+                        <div class="container contenedor">
+                            <div class="col-12 col-xl-7">
+                                <form method="post" action="/registrar_funcionario" name="f1" class="border p-5 form">
+                                    <div class="form-group">
+                                        <label for="nombre" style="color:black">Nombre</label>
+                                        <input name="nombre" id="nombre" class="form-control" type="text" style="color:black" onkeypress="return verificar_nombre(event)" required/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="apellido" style="color:black">Apellido</label>
+                                        <input name="apellido" id="apellido" class="form-control" type="text" style="color:black" onkeypress="return verificar_nombre(event)" required/>
+                                    </div>
+                    
+                                    <div class="form-group">
+                                        <label for="rut" style="color:black">Rut</label>
+                                        <input name="rut" id="rut" class="form-control" maxlength="10" type="text" style="color: black;" placeholder="Sin puntos y con guíon" onkeypress="return verificar(event)" required/>
+                                    </div>
+                    
+                                    <div class="form-group">
+                                        <label for="correo" style="color:black">Correo electronico</label>
+                                        <input name="correo" id="correo" class="form-control" style="color:black" required/>
+                                    </div>
+                    
+                                    <div class="form-group">
+                                        <label for="password" style="color:black">Password</label>
+                                        <input name="password" id="password" type="password" class="form-control" style="color:black" required/>
+                                    </div>
+                    
+                                    <div class="form-group">
+                                       <label for="r_password" style="color:black">Repetir Password</label>
+                                        <input name="r_password" id="r_password" type="password" class="form-control" style="color:black" required/>
+                                    </div>
+                
+                                    <div class="form-group">
+                                        <label for="rol" style="color:black">Rol</label>
+                                        <select id="rol" name="rol" class="form-control">
+                                            <option value="1">Administrador</option>
+                                            <option value="2">Cajero(a)</option>
+                                            <option value="3">Repartidor</option>
+                                        </select>
+                                    </div>
+        
+                                    <div class="form-group">
+                                        <label for="estado" style="color:black">Estado</label>
+                                        <select id="estado" name="estado" class="form-control">
+                                            <option value="1">Activado</option>
+                                            <option value="0">Desactivado</option>
+                                        </select>
+                                    </div>
+        
+                                    <div class="form-group">
+                                        <label for="sucursal" style="color:black">Sucursal</label>
+                                        <select id="sucursal" name="sucursal" class="form-control">
+                                            {% for suc in sucursal %}
+                                            <option value="{{suc.id}}">{{suc.direccion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <br>
+                                    <input type="submit" value="Registrar" id="btn" class="btn" style="background-color: #7f544f; color: white;">
+        
+                                </form>
+            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div> 
+
+
+
+    <br><br>
+
+
+    <!-- FILTRAR TABLA -->
+    <div class="row justify-content-around">
+        <div class="columna col-6"> <b> <label>Filtrar funcionarios por su estado</label> </b> </div>
+        <div class="columna col-6"> <b> <label>Filtrar funcionarios por su sucursal</label> </b> </div>
+    </div>
+
+    <div class="row justify-content-around">
+        <div class="columna col-6">
+        <select name="filtrar_funcionario" id="filtrar_funcionario" onchange="estado(this)" style="color:black" class="form-control">
+            <option value="todos">Todos</option>
+            <option value="1">Activados</option>
+            <option value="0">Desactivados</option>
+        </select>
+     </div>
+        <div class="columna col-6"> <select name="filtrar_funcionario" id="filtrar_funcionario" onchange="sucursal(this)" style="color:black" class="form-control">
+            <option value="todos">Todos</option>
+            <option value="1">Avenida Pedro Aguirre Cerda 9440</option>
+            <option value="2">José Ignacio Zenteno 21</option>
+            <option value="3">Avenida Angamos 236</option>
+        </select>
+     </div>
+    </div>
+
+    <!-- <div class="row container">
+        <b> <label>Filtrar funcionarios por su estado:</label> </b>
+        <select name="filtrar_funcionario" id="filtrar_funcionario" onchange="estado(this)" style="color:black" class="form-control">
+            <option value="todos">Todos</option>
+            <option value="1">Activados</option>
+            <option value="0">Desactivados</option>
+        </select>
+    
+    </div>
+    <br>
+    <div class="row container">
+        <b> <label>Filtrar funcionarios por su sucursal:</label> </b>
+        <select name="filtrar_funcionario" id="filtrar_funcionario" onchange="sucursal(this)" style="color:black" class="form-control">
+            <option value="todos">Todos</option>
+            <option value="1">Avenida Pedro Aguirre Cerda 9440</option>
+            <option value="2">José Ignacio Zenteno 21</option>
+            <option value="3">Avenida Angamos 236</option>
+        </select>
+    </div> -->
+
+    <br><br><br>
+
+    <!--  TABLA -->
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Rut</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido</th>
+                    <th scope="col">Correo</th>
+                    <th scope="col">Rol</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Sucursal</th>
+                    <th scope="col">Modificar</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo_tabla">
+                {% for func in data %}
+                <tr>
+                    <td>{{func['rut']}}</td>
+                    <td> {{func['nombre']}}  </td>
+                    <td> {{func['apellido']}} </td>
+                    <td> {{func['correo']}} </td>
+
+                    {% if func['rol'] == 1 %}
+                    <td>Administrador(a)</td>
+                    {% elif func['rol'] == 2 %}
+                    <td>Cajero(a) </td>
+                    {% else %}
+                    <td>Repartidor(a) </td>
+                    {% endif %}
+
+                    {% if func['estado'] == 1 %}
+                    <td>Activado </td>
+                    {% else %}
+                    <td>Desactivado </td>
+                    {% endif %}
+
+                    <td>{{func['id_sucursal']}}</td>
+                    
+                    <td> <a href="/modificar_func/{{ func['id'] }}" class="btn" style="background-color: #7f544f; color: white;">Modificar</a> </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+              
+</div>
+
+
+<script>
+    function estado(opcion) {
+
+        $.ajax({
+            method: 'POST',
+            url: '/filtro_personal_estado',
+            data: {"opcion": opcion.value},
+            success: function(result) {
+                $('#cuerpo_tabla').html("");
+                for (var i = 0; i < result.length; i++) {
+                
+                    var modificar = '<a href=/modificar_func/' + result[i].id + ' class="btn"  style="background-color: #7f544f; color: white;" >Modificar</a>' ;
+                    var rol;
+                    var estado;
+
+                    if (result[i].estado == 1) {
+                        estado = 'Activado'
+                    } else {
+                        estado = 'Desactivado'
+                    }
+
+                    if (result[i].rol == 1) {
+                        rol = 'Administrador(a)'
+                    } 
+                    if (result[i].rol == 2) {
+                        rol = 'Cajero(a)'
+                    }
+                    if (result[i].rol == 3) {
+                        rol = 'Repartidor(a)'
+                    } 
+
+                
+                        var tr = `<tr>
+                        <td>`+ result[i].rut +`</td>
+                        <td>`+ result[i].nombre +`</td>
+                        <td>`+ result[i].apellido +`</td>
+                        <td>` + result[i].correo +`</td>
+                        <td>`+ rol +`</td>     
+                        <td>`+ estado +`</td>
+                        <td>`+ result[i].id_sucursal +`</td>
+                        <td>`+ modificar +`</td>
+                        </tr>`;
+                        $("#cuerpo_tabla").append(tr)
+                }         
+            }
+        })
+
+    }
+
+    function sucursal(opcion) {
+
+$.ajax({
+    method: 'POST',
+    url: '/filtro_personal_sucursal',
+    data: {"opcion": opcion.value},
+    success: function(result) {
+        $('#cuerpo_tabla').html("");
+        for (var i = 0; i < result.length; i++) {
+        
+            var modificar = '<a href=/modificar_func/' + result[i].id + ' class="btn"  style="background-color: #7f544f; color: white;" >Modificar</a>' ;
+            var rol;
+            var estado;
+
+            if (result[i].estado == 1) {
+                estado = 'Activado'
+            } else {
+                estado = 'Desactivado'
+            }
+
+            if (result[i].rol == 1) {
+                rol = 'Administrador(a)'
+            } 
+            if (result[i].rol == 2) {
+                rol = 'Cajero(a)'
+            }
+            if (result[i].rol == 3) {
+                rol = 'Repartidor(a)'
+            } 
+        
+                var tr = `<tr>
+                <td>`+ result[i].rut +`</td>
+                <td>`+ result[i].nombre +`</td>
+                <td>`+ result[i].apellido +`</td>
+                <td>` + result[i].correo +`</td>
+                <td>`+ rol +`</td>     
+                <td>`+ estado +`</td>
+                <td>`+ result[i].id_sucursal +`</td>
+                <td>`+ modificar +`</td>
+                </tr>`;
+                $("#cuerpo_tabla").append(tr)
+        }         
+    }
+})
+
+}
+
+</script>
+
+<script src="../static/css/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+{% extends 'admin_base_modificar.html' %}
+
+{% block header %}
+<h1>{% block title %} Modificar Funcionario {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+<!-- SWEET ALERT 2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% block content %}
+
+{% with mensajes = get_flashed_messages() %}
+{% if mensajes %}
+{% for m in mensajes %}
+{% if m == 'Los password no coinciden' %}
+
+<script>
+Swal.fire({
+    position: 'center',
+    icon: 'error',
+    text: '{{m}}',
+        
+    showConfirmButton: True,
+    confirmButtonColor: '#3E60E9',
+    confirmButtonAriaLabel: 'Ok',
+        
+    allowOutSideClick: false,
+    allowEscapeKey: false,
+    allowEnterKey: false,
+    stopKeydownPropagation: false,
+})
+</script>
+    
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+    
+
+<main class="main col" style="margin-left: 330px; margin-right: 20px;">
+    <div class="row">
+
+        <div class="text-center">
+            <div class="card-body">
+                <h1>Modificar datos de la sucursal</h1>
+            </div>
+        </div>
+
+        <div class="row contacto">
+            <div class="container contenedor">
+                <div class="col-12 col-xl-7" id="form-rec">
+
+                    <form action="/actualizaSucursal/{{sucursal.id}}" method="post" name="f1" class="border p-5 form">
+                
+                        <div class="form-group">
+                            <b> <label for="razon_social" style="color:black"> Razon social </label> </b>
+                            <input name="razon_social" id="razon_social" class="form-control" type="text" style="color:black" value="{{sucursal.razon_social}}" onkeypress="return verificar_nombre(event)" required/>
+                        </div>
+                        
+                        <div class="form-group">
+                            <b> <label for="giro" style="color:black"> Giro </label> </b>
+                            <input name="giro" id="giro" class="form-control" type="text" style="color:black" value="{{sucursal.giro}}" onkeypress="return verificar_nombre(event)" required/>
+                        </div>
+                        
+                        <div class="form-group">
+                            <b> <label for="nombre" style="color:black"> Nombre </label> </b>
+                            <input name="nombre" id="nombre" class="form-control" type="text" value="{{sucursal.nombre}}" style="color: black;" required/>
+                        </div>
+        
+                        <div class="form-group">
+                            <b> <label for="rut" style="color:black"> Rut </label> </b>
+                            <input name="rut" id="rut" class="form-control" type="text" value="{{sucursal.rut}}" style="color: black;" required/>
+                        </div>
+
+                        <div class="form-group">
+                            <b> <label for="telefono" style="color:black"> Telefono </label> </b>
+                            <input name="telefono" id="telefono" class="form-control" value="{{sucursal.telefono}}" style="color: black;" required>
+                        </div>
+        
+                        <div class="form-group">
+                            <b> <label for="direccion" style="color:black"> Direccion </label> </b>
+                            <input name="direccion" id="direccion" type="text" class="form-control" value="{{sucursal.direccion}}" style="color: black;" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <b> <label for="correo" style="color:black"> Correo </label> </b>
+                            <input name="correo" id="correo" type="text" class="form-control" value="{{sucursal.correo}}" style="color: black;" required>
+                        </div>
+
+
+                        <div class="form-group" style="color:black">
+                            <b> <label for="estado">Estado</label> </b>
+                            <select name="estado"  class="form-control" style="color:black">
+                                {% if sucursal.estado == 1 %}
+                                <option value="1">Activado</option>
+                                <option value="0">Desactivado</option>
+                                {% else %}
+                                <option value="0">Desactivado</option>
+                                <option value="1">Activado</option>
+                                {% endif %}
+                            </select>
+                        </div>
+
+                        <input type="submit" value="Editar"  id="btn" class="btn btn-primary"/>
+                    </form>
+
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</main>
+    
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    
+{% endblock %}
+
+</body>
+</html>

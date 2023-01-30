@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %} Locales {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+
+<!-- JQuery - JQuery UI -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<!-- API DE GOOGLE MAPS -->
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMKM8EL_YX9zrh0JgSzY7O-A6bnr--r_M"></script>
+<!-- ----------------------------- -->
+
+{% block content %}
+
+<!-- {% with mensajes = get_flashed_messages() %}
+{% if mensajes %}
+{% for m in mensajes %}
+
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'success',
+        text: '{{m}}',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% endfor %}
+{% endif %}
+{% endwith %} -->
+<style>
+    #geomap{
+        width: 100%;
+        height: 400px;
+    }
+    </style>
+
+
+<div class="main col" style="margin-left: 330px; margin-right: 20px;">
+    <div class="row">
+        <div class="col">
+            <div class="text-center">
+                <div class="card-body">
+                    <h1  class="bienvenido">Locales</h1>
+                    <p style="font-size: 20px; margin-top: 30px">Aquí conocera informacion de las 3 sucursales ubicadas en la ciudad de Antofagasta</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for sucursal in data %}
+        {% if sucursal.id == 1 %}
+        <div class="col-md-12 col-lg-6 col-xl-4">
+            <div class="card">
+                <div class="card-body">
+                    <p class="d-none d-xl-block">{{sucursal.nombre}} </p>
+                    <p class="d-block d-xl-none">{{sucursal.nombre}}</p>
+                    <p>Contacto: {{sucursal.telefono}}</p>
+                    <p>Direccion: {{sucursal.direccion}}</p>
+                    <p>Correo electronico: {{sucursal.correo}}</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3656.6945889631875!2d-70.39305068507026!3d-23.5794099846739!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x96ae2b5e9e9b8619%3A0x9e7357196d93fb21!2sAv.%20Pedro%20Aguirre%20Cerda%209440%2C%201262538%20Antofagasta!5e0!3m2!1ses-419!2scl!4v1671220329560!5m2!1ses-419!2scl" width="450" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <br>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        {% for sucursal in data %}
+        {% if sucursal.id == 2 %}
+        <div class="col-md-12 col-lg-6 col-xl-4">
+            <div class="card">
+                <div class="card-body">
+                    <p class="d-none d-xl-block">{{sucursal.nombre}} </p>
+                    <p class="d-block d-xl-none">{{sucursal.nombre}}</p>
+                    <p>Contacto: {{sucursal.telefono}}</p>
+                    <p>Direccion: {{sucursal.direccion}}</p>
+                    <p>Correo electronico: {{sucursal.correo}}</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1881.081669887831!2d-70.39805087820824!3d-23.637954950561404!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x96afd53b3b38dd33%3A0x3ecc0a77c4197b83!2sJos%C3%A9%20Ignacio%20Zenteno%2021%2C%20Antofagasta!5e0!3m2!1ses-419!2scl!4v1671220300959!5m2!1ses-419!2scl" width="450" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <br>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        {% for sucursal in data %}
+        {% if sucursal.id == 3 %}
+        <div class="col-md-12 col-lg-6 col-xl-4">
+            <div class="card">
+                <div class="card-body">
+                    <p class="d-none d-xl-block">{{sucursal.nombre}} </p>
+                    <p class="d-block d-xl-none">{{sucursal.nombre}}</p>
+                    <p>Contacto: {{sucursal.telefono}}</p>
+                    <p>Direccion: {{sucursal.direccion}}</p>
+                    <p>Correo electronico: {{sucursal.correo}}</p>
+                </div>
+                <div style="margin-left: 20px;">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1827.0486508823412!2d-70.40730027088097!3d-23.672478097905135!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x96afd5a0327af885%3A0x635aa98f92ba4e4f!2sAv.%20Angamos%20236%2C%20Antofagasta!5e0!3m2!1ses-419!2scl!4v1671220207001!5m2!1ses-419!2scl" width="450" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <br>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+
+
+</div>
+
+{% endblock %}
+
+</body>
+</html>

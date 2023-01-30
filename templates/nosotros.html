@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %} Nosotros {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+
+
+{% block content %}
+
+
+<div class="main col" style="margin-left: 330px; margin-right: 20px;">
+    <div class="row nosotros">
+        <div class="columna col-12">
+            <h1>Nosotros</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-xl-6">
+            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt optio eos, dignissimos inventore distinctio harum veniam temporibus ex vitae qui ipsa sapiente, aliquid ullam eaque rerum accusantium, est laudantium. Aliquam. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt optio eos, dignissimos inventore distinctio harum veniam temporibus ex vitae qui ipsa sapiente, aliquid ullam eaque rerum accusantium, est laudantium. Aliquam</p>
+        </div>
+        <div class="col-md-12 col-xl-6"><img class="d-block" src="../static/img/cafe.jpg" alt="imagen"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-xl-6">
+            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt optio eos, dignissimos inventore distinctio harum veniam temporibus ex vitae qui ipsa sapiente, aliquid ullam eaque rerum accusantium, est laudantium. Aliquam. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt optio eos, dignissimos inventore distinctio harum veniam temporibus ex vitae qui ipsa sapiente, aliquid ullam eaque rerum accusantium, est laudantium. Aliquam</p>
+        </div>
+        <div class="col-md-12 col-xl-6">
+            <img class="d-block" src="../static/img/lecoin.jfif" style="width: 500px; height: 450px;" alt="imagen">
+        </div>    
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-xl-6">
+            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt optio eos, dignissimos inventore distinctio harum veniam temporibus ex vitae qui ipsa sapiente, aliquid ullam eaque rerum accusantium, est laudantium. Aliquam. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt optio eos, dignissimos inventore distinctio harum veniam temporibus ex vitae qui ipsa sapiente, aliquid ullam eaque rerum accusantium, est laudantium. Aliquam</p>
+        </div>
+        <div class="col-md-12 col-xl-6">
+            <img class="d-block" src="../static/img/cafe.jpg" style="width: 500px; height: 450px;" alt="imagen">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-xl-6">
+            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt optio eos, dignissimos inventore distinctio harum veniam temporibus ex vitae qui ipsa sapiente, aliquid ullam eaque rerum accusantium, est laudantium. Aliquam. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt optio eos, dignissimos inventore distinctio harum veniam temporibus ex vitae qui ipsa sapiente, aliquid ullam eaque rerum accusantium, est laudantium. Aliquam</p>
+        </div>
+        <div class="col-md-12 col-xl-6">
+            <img class="d-block" src="../static/img/lecoin3.jfif" style="width: 500px; height: 450px;" alt="imagen">
+        </div>
+    </div>
+
+
+</div>
+
+    
+
+{% endblock %}
+
+</body>
+</html>

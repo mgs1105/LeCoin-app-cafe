@@ -1,0 +1,152 @@
+{% extends 'admin_base.html' %}
+
+{% block header %}
+<h1>{% block title %} Admin {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+
+{% block content %}
+
+
+<style>
+
+#tabla-tareas{
+    margin-left: auto;
+    margin-right: auto;
+    min-height: .01%;
+    overflow-x: auto;
+    width: 100%;
+}
+#eliminar {
+    background-color: red;
+    color: white;
+    margin-top: 5px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 5px;
+}
+#editar {
+    background-color: blue;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 5px; 
+}
+#botones {
+    padding: 10px;
+}
+#tabla-colores{
+    display: inline-block;
+    
+}
+
+@media (max-width: 1350px) {
+    #tabla-tareas{
+        width: 100%;
+        margin-bottom: 15px;
+        overflow-y: hidden;
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+    }
+}
+
+@media (max-width: 1000px) {
+    #tabla-colores {
+        table-layout: fixed;
+        width: 90%;
+    }
+}
+
+/* ---------------- LOADING ---------------- */
+#contenedor_carga{
+    background-color: rgba(250, 250, 250, 0.9);
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    -webkit-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
+    z-index: 10000;
+    visibility: hidden;
+    opacity: 0;
+}
+
+#carga{
+    border: 15px solid #ccc;
+    border-top-color: #2c75dc;
+    border-top-style: grove;
+    height: 100px;
+    width: 100px;
+    border-radius: 100%;
+    
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 100;
+    margin: auto;
+    -webkit-animation: girar 1.5s linear infinite;
+    -o-animation: girar 1.5s linear infinite;
+    animation: girar 1.5s linear infinite;
+}
+
+@keyframes girar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style>
+
+<div id="contenedor_carga">
+    <div id="carga"></div>
+</div>
+
+<div class="main col" style="margin-left: 330px; margin-right: 20px;">
+    <div class="row">
+        <h1 class="bienvenido">Stock critico de productos</h1>
+    </div>
+
+    <div>
+        <table class="table">
+            <thead>
+             
+                <tr>
+                    <th scope="col">Producto</th>
+                    <th scope="col">Cantidad en tienda</th>
+                    <th scope="col">Stock critico</th>
+                    <th scope="col">Diferencia</th>
+                </tr>
+                    
+            </thead>
+            <tbody>
+                {% for diferencia in stock %}
+                <tr>
+                    <td>{{diferencia.producto}}</td>
+                    <td>{{diferencia.cantidad_tienda}}</td>
+                    <td>{{diferencia.stock_critico}}</td>
+                    <td>{{diferencia.diferencia}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    
+    
+{% endblock %}
+
+</body>
+</html>

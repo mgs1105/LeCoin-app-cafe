@@ -1,0 +1,255 @@
+{% extends 'admin_base.html' %}
+{% block header %}
+<h1>{% block title %} Tu cuenta {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+
+{% block content %}
+
+{% with mensajes = get_flashed_messages() %}
+{% if mensajes %}
+{% for m in mensajes %}
+
+{% if m == '%s' %}
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'question',
+        text: "¿Seguro que desea cerrar sesion?",
+
+        // boton Cerrar sesion
+        showConfirmButton: true,
+        confirmButtonColor: '#D53737',
+        confirmButtonAriaLabel: 'Cerrar sesion',
+        confirmButtonText: 'Cerrar sesion',
+
+        // boton volver
+        showCancelButton: true,
+        cancelButtonColor: '#24a0ed',
+        cancelButtonAriaLabel: 'Cancelar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) { 
+            window.location.href = '/destruir_sesion_cliente';
+        } else {
+            window.location.href = '/tu_cuenta';
+        }
+    })
+
+</script>
+
+{% elif m == '¡Tus datos han sido actualizados con exito!' or m == '¡Tus datos fueron actualizados con exito!' %}
+
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'success',
+        text: '{{m}}',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% elif m == 'Cerrar sesion' %}
+
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'question',
+        text: "¿Seguro que desea {{m}}?",
+
+        // boton Cerrar sesion
+        showConfirmButton: true,
+        confirmButtonColor: '#D53737',
+        confirmButtonAriaLabel: 'Cerrar sesion',
+        confirmButtonText: 'Cerrar sesion',
+
+        // boton volver
+        showCancelButton: true,
+        cancelButtonColor: '#24a0ed',
+        cancelButtonAriaLabel: 'Cancelar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) { 
+            window.location.href = '/destruir_sesion_funcionario';
+        } else {
+            window.location.href = '/admin_cuenta';
+        }
+    })
+
+</script>
+
+{% else %}
+
+<script>
+    Swal.fire ({
+        position: 'center',
+        icon: 'error',
+        text: "{{m}}",
+        
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+        
+        
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<main class="main col" style="margin-left: 330px; margin-right: 20px;">
+    <div class="row">
+
+        <div class="row">
+            <div class="col">
+                <div class="text-center">
+                    <div class="card-body">
+                        <h1 class="bienvenido">Tus datos</h1>
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row contacto">
+
+            <div class="container contenedor">
+            <div class="col-12 col-xl-7" id="form-rec">
+                
+                <form method="post" action="/actualiza_funcionario/{{funcionario.id}}" id="f2" name="f2" class="border p-5 form-horizontal">
+                    <div class="form-group">
+                        <label for="nombre" style="color:black">Nombre</label>
+                        <input name="nombre" id="nombre" class="form-control" type="text" style="color:black" value="{{funcionario.nombre}}" onkeypress="return verificar_nombre(event)" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido" style="color:black">Apellido</label>
+                        <input name="apellido" id="apellido" class="form-control" type="text" style="color:black" value="{{funcionario.apellido}}" onkeypress="return verificar_nombre(event)" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rut" style="color:black">Rut</label>
+                        <input name="rut" id="rut" class="form-control" maxlength="10" type="text" style="color:black;" value="{{funcionario.rut}}" placeholder="Sin puntos y con guíon" onkeypress='return verificar(event)' required/>
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="correo" style="color:black">Correo electronico</label>
+                        <input name="correo" id="correo" class="form-control" value="{{funcionario.correo}}" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" style="color:black">Password</label>
+                        <input name="password" id="password" type="text" class="form-control" value="{{funcionario.password}}" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="repetir_password" style="color:black">Repetir Password</label>
+                        <input name="repetir_password" id="repetir_password" type="text" class="form-control" value="{{funcionario.password}}" style="color:black" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rol" style="color:black">Rol</label>
+                        {% if funcionario.rol == 2 %}
+                        <input name="rol" id="rol" type="text" class="form-control" value="Cajero(a)" style="color:black" readonly/>
+                        {% elif funcionario.rol == 3 %}
+                        <input name="rol" id="rol" type="text" class="form-control" value="Repartidor" style="color:black" readonly/>
+                        {% else %}
+                            <select id="rol" name="rol" class="form-control">
+                                <option value="1">Administrador</option>
+                                <option value="2">Cajero(a)</option>
+                                <option value="3">Repartidor</option>
+                            </select>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estado" style="color:black">Estado</label>
+                        <select id="estado" name="estado" class="form-control">
+                            <option value="1">Activado</option>
+                            <option value="0">Desactivado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_sucursal" style="color:black">Sucursal</label>
+                        {% if funcionario.rol == 2 or funcionario.rol == 3 %}
+                            {% if funcionario.id_sucursal == 1 %}
+                            <input name="id_sucursal" id="id_sucursal" type="text" class="form-control" value="Avenida Pedro Aguirre Cerda 9440" style="color:black" readonly/>
+                            {% elif funcionario.id_sucursal == 2 %}
+                            <input name="id_sucursal" id="id_sucursal" type="text" class="form-control" value="José Ignacio Zenteno 21" style="color:black" readonly/>
+                            {% else %}
+                            <input name="id_sucursal" id="id_sucursal" type="text" class="form-control" value="Avenida Angamos 236" style="color:black" readonly/>
+                            {% endif %}
+                        {% else %}
+                            <select id="id_sucursal" name="id_sucursal" class="form-control">
+                            <option value="{{funcionario.id_sucursal}}">{{funcionario.nom_suc}}</option>
+                            {% for suc in sucursal %}
+                            <option value="{{suc.id}}">{{suc.direccion}}</option>
+                            {% endfor %}
+                        </select>
+                        {% endif %}
+                    </div>
+
+                    <div class="btn">
+                    <input type="submit" value="Actualizar" id="btn-reg" class="btn" style="margin-top:20px; background-color: #7f544f; color: white;">
+                    </div>    
+            </form>
+            </div>
+            </div>
+
+        </div>
+
+    </div>
+</main>
+
+<script>
+function verificar(event) {
+    if (event.charCode >= 48 && event.charCode <= 57 || event.charCode == 107 || event.charCode == 45 ){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function verificar_nombre(event) {
+
+if (event.charCode >= 107 && event.charCode <= 90 || event.charCode >= 97 && event.charCode <= 122 || event.charCode == 241 || event.charCode == 209
+    || event.charCode == 225 || event.charCode == 233 || event.charCode == 237 || event.charCode == 243 || event.charCode == 250) {
+        return true;
+} else {
+    return false;
+}
+}
+
+function solo_numero(event) {
+    if (event.charCode >=48 && event.charCode <=57) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+</script>
+
+{% endblock %}
+
+</body>
+</html>

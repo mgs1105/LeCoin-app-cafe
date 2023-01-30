@@ -1,0 +1,297 @@
+{% extends 'admin_base.html' %}
+
+{% block header %}
+<h1>{% block title %} Admin {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/js/bootstrap.bundle.min.css')}}">
+<!-- SWEET ALERT 2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% block content %}
+
+{% with mensajes = get_flashed_messages() %}
+{% if mensajes %}
+{% for m in mensajes %}
+ 
+{% if m == 'Repartidor asignado con exito' %}
+<script>
+    Swal.fire({
+        position: 'center',
+        icon: 'success',
+        text: '{{m}}',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#3E60E9',
+        confirmButtonAriaLabel: 'Ok',
+
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+    })
+</script>
+
+{% elif m == [ m[0],m[1],m[2],m[3],m[4],m[5],m[6] ]  %}  
+
+<script>
+    Swal.fire ({
+        position: 'center',
+        title: 'Modificar estado del pedido',
+        html:
+        '<select id="estado" name="estado" class="form-control">' +            
+            '<option value="{{m[0]}} "> {{m[1]}} </option>' +
+            '<option value="{{m[2]}}"> {{m[3]}} </option>' +
+            '<option value="{{m[4]}}"> {{m[5]}} </option>' +
+        '</select>',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#0000FF',
+        confirmButtonAriaLabel: 'Modificar',
+        confirmButtonText: 'Modificar',
+        
+        
+        showCancelButton: true,
+        cancelButtonColor: '#E83845',
+        cancelButtonAriaLabel: 'Cancelar',
+        cancelButtonText: 'Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const estado = document.getElementById('estado').value
+
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                url: '/modificar_estado/{{m[6]}}',
+                data: {estado: estado}
+            });
+
+            window.location.href = '/admin_pedidos'
+
+        } else {
+            
+            window.location.href = '/admin_pedidos'
+        }
+    })
+</script>
+
+{% elif m == [ m[0],m[1],m[2],m[3],m[4] ]  %}  
+
+<script>
+    Swal.fire ({
+        position: 'center',
+        title: 'Modificar estado del pedido',
+        html:
+        '<select id="estado" name="estado" class="form-control">' +            
+            '<option value="" disabled selected> Seleccione... </option>' +
+            '<option value="{{m[0]}} "> {{m[1]}} </option>' +
+            '<option value="{{m[2]}}"> {{m[3]}} </option>' +
+        '</select>',
+
+        showConfirmButton: true,
+        confirmButtonColor: '#0000FF',
+        confirmButtonAriaLabel: 'Modificar',
+        confirmButtonText: 'Modificar',
+        
+        
+        showCancelButton: true,
+        cancelButtonColor: '#E83845',
+        cancelButtonAriaLabel: 'Cancelar',
+        cancelButtonText: 'Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const estado = document.getElementById('estado').value
+
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                url: '/modificar_estado/{{m[4]}}',
+                data: {estado: estado}
+            });
+
+            window.location.href = '/admin_pedidos'
+
+        } else {
+            
+            window.location.href = '/admin_pedidos'
+        }
+    })
+</script>
+
+{% else %}
+
+<script>
+    Swal.fire ({
+     position: 'center',
+     title: 'Productos del pedido',
+     html: 
+     '<table>' +
+         '<thead>' +
+             '<tr>' +
+                 '<th> Producto(s) </th>' +
+             '</tr>' +
+         '</thead>' +
+         '<tbody>' +
+             '<tr>' +
+                 '<td> {{m}} </td>' +
+             '</tr>' +
+         '</tbody>' +
+     '</table>',
+     
+     showConfirmButton: true,
+     confirmButtonColor: '#3E60E9',
+     confirmButtonAriaLabel: 'Ok',
+     
+     
+     allowOutsideClick: false,
+     allowEscapeKey: false,
+     allowEnterKey: false,
+     stopKeydownPropagation: false,
+ }) 
+</script>
+
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="main col" style="margin-left: 330px; margin-right: 20px;">
+
+    <div class="row">
+
+        <div class="col">
+            <div class="text-center">
+                <div class="card-body">
+                    <h1 class="bienvenido">Gestionar pedidos</h1>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="container">
+            <div class="abs-center col-md-8 col-xl-7" id="form-rec">
+
+                <form action="/filtrar_pedido" method="post">
+                    <label style="margin-right: 10px;" for="hoy">Pedidos por dia:</label>
+                    {% if fecha != None %}
+                    <input name="hoy" id="hoy" type="date" value="{{fecha}}" required/>
+                    {% else %}
+                    <input name="hoy" id="hoy" type="date" value="" required/>
+                    {% endif %}
+                    <input type="submit" value="filtrar" id="btn" class="btn" style="background-color: #7f544f; color: white; padding: 2px 30px; margin-left: 20px;">
+                    <br><br>            
+                </form>
+            
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Hora</th>
+                    <th scope="col">Neto</th>
+                    <th scope="col">IVA</th>
+                    <th scope="col">Bruto</th>
+                    <th scope="col">Observaciones</th>
+                    <th scope="col">Sucursal</th>
+                    <th scope="col">Modificar estado</th>
+                    <th scope="col">Detalle del pedido</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in data %}
+
+
+                <tr>
+                    <td> {{pedido.id}} </td>
+
+                    {% if pedido.estado == 1 %}
+                    <td> Ingresado </td>
+                    {% elif pedido.estado == 2 %}
+                    <td> En proceso </td>
+                    {% elif pedido.estado == 3 %}
+                    <td> Enviado </td>
+                    {% elif pedido.estado == 4 %}
+                    <td> Entregado </td>
+                    {% else %}
+                    <td> Cancelado </td>
+                    {% endif %}
+
+                    <td> {{pedido.fecha}} </td>
+                    <td> {{pedido.hora}} </td>
+                    <td> {{pedido.neto}} </td>
+                    <td> {{pedido.iva}} </td>
+                    <td> {{pedido.bruto}} </td>
+                    <td> {{pedido.observaciones}} </td>
+                    <td> {{pedido.id_sucursal}} </td>
+                    
+                    {% if funcionario.rol == 3 %}
+
+                        {% if pedido.estado == 3 %}
+                        <td> <a href="/act_estado_repartidor/{{ pedido.id }} " style="color: #E54414;">Modificar estado</a> </td>
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+
+                    {% else %}    
+                    <td> <a href="/act_estado/{{ pedido.id }} " style="color: #E54414;">Modificar estado</a> </td>
+                    {% endif %}
+
+                    <td> <a href="/informacion_pedido/{{ pedido.id }}" style="color: #E54414;">Mas informacion</a> </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+            
+    </div>
+</div>
+
+<script>
+
+var lista_valor = [];
+
+function activa_boton() {
+    
+    var repartidor = document.getElementById("repartidor");
+    var asignar = document.getElementById("asignar");
+    
+
+	if (repartidor.selectedIndex != 0){
+		asignar.disabled = false;
+	} else {
+		asignar.disabled = true;
+	}
+    guardar_info(repartidor.value)
+}
+
+function guardar_info(valores) {
+    if (lista_valor == [] ) {
+        lista_valor.push(valores)
+    } else {
+        lista_valor = []
+        lista_valor.push(valores)
+    }
+}
+
+</script>
+
+    
+</body>
+
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+{% extends 'admin_base_modificar.html' %}
+
+{% block header %}
+<h1>{% block title %} Gestionar Pedido {% endblock %}</h1>
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js"></script>
+<style type="text/css"></style>
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/estilos.css')}}">
+<link  rel="stylesheet" type="text/css" href="{{url_for('static', filename='../static/css/bootstrap.min.css')}}">
+<!-- SWEET ALERT 2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% block content %}
+
+
+<div class="main col" style="margin-left: 330px; margin-right: 20px;">
+
+    <div class="row">
+        <h1 class="bienvenido">Detalles del pedido</h1>
+    </div>
+    
+    <br><br>
+
+
+    <div class="row justify-content-around">
+
+        <div class="col-4">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prod in productos %}
+                    <tr>
+                        <td> {{prod['nombre']}} </td>
+                        <td> {{prod['cantidad']}} </td>
+                    </tr>
+                    {% endfor %}
+
+                    {% if pedido.id_repartidor != None %}
+                        <tr>
+                            <td> <strong>Repartidor: {{pedido.nombre_rep}}</strong> </td>
+                        </tr>
+                    {% endif %}
+
+                </tbody>
+            </table>
+
+
+            {% if pedido.estado == 3 and pedido.id_repartidor == None %}
+            <div>
+                <div class="form-group">
+                    <label for="repartidor" style="color:black">Repartidor</label>
+                    <select id="repartidor" name="repartidor" class="form-control" onchange="activar_boton()">
+                        <option value="0" disabled selected>Seleccione...</option>
+                        {% for repa in repartidores %}
+                        <option value="{{pedido.id}}" id="opcion"> {{repa.nombre}} {{repa.apellido}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+        
+                <input type="submit" value="Asignar" id="Asignar" class="btn" style="background-color: #7f544f; color: white; margin-top: 20px; padding: 5px 50px;" disabled onclick="asignar_repa()">
+         
+            </div>
+            {% endif %}
+        </div>
+
+    
+
+
+        
+        <div class="col-6" id="form-rec">
+            <h5 style="position: center;">Informacion del cliente</h5>
+            <br>
+            <form method="post" id="f2" name="f2" class="border p-5 form-horizontal">
+                <div class="form-group">
+                    <label for="nombre" style="color:black">Nombre</label>
+                    <input name="nombre" id="nombre" class="form-control" type="text" style="color:black" value="{{cliente.nombre}}" onkeypress="return verificar_nombre(event)" readonly/>
+                </div>
+                <div class="form-group">
+                    <label for="apellido" style="color:black">Apellido</label>
+                    <input name="apellido" id="apellido" class="form-control" type="text" style="color:black" value="{{cliente.apellido}}" onkeypress="return verificar_nombre(event)" readonly/>
+                </div>
+
+                <div class="form-group">
+                    <label for="rut" style="color:black">Rut</label>
+                    <input name="rut" id="rut" class="form-control" maxlength="10" type="text" style="color:black;" value="{{cliente.rut}}" readonly/>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono" style="color:black">Telefono</label>
+                    <input name="telefono" id="telefono" class="form-control" maxlength="8" style="color:black" value="{{cliente.telefono}}" readonly/>
+                </div>
+    
+                <div class="form-group">
+                    <label for="direccion" style="color:black">Direccion</label>
+                    <input name="direccion" id="direccion" class="form-control" value="{{cliente.direccion}}" style="color:black" readonly/>
+                </div>
+
+                <div class="form-group">
+                    <label for="correo" style="color:black">Correo electronico</label>
+                    <input name="correo" id="correo" class="form-control" value="{{cliente.correo}}" style="color:black" readonly/>
+                </div>
+            </form>    
+        </div>
+        
+    </div>
+        
+</div>
+    
+<script>
+
+    function activar_boton() {
+
+        repartidor = document.getElementById("repartidor").selectedIndex;
+        boton = document.getElementById("Asignar")
+
+        if (repartidor != 0) {
+            boton.disabled = false;
+        } else {
+            boton.disabled = true;
+        }
+
+    }
+
+    function asignar_repa() {
+
+        var repartidor = document.getElementById("repartidor").selectedIndex;
+        var pedido = document.getElementById("opcion").value;
+
+
+
+        $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                url: '/asignar_repartidor',
+                data: {
+                    "repartidor": repartidor,
+                    "pedido": pedido
+                } 
+            });
+            window.location.href = '/admin_pedidos'
+    }
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    
+{% endblock %}
+
+</body>
+</html>
