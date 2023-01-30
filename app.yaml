@@ -1,0 +1,13 @@
+application: aplicacion-cafe
+version: 0
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /css
+  static_dir: static
+
+- url: /.*
+  upload: home.html
+  static_files: home.html
